@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CheeseMello</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --rind:#20160e;
+    --rind-2:#2a1d12;
+    --rind-3:#352414;
+    --line:#4a3620;
+    --cream:#f4e9d2;
+    --cream-dim:#cdbfa2;
+    --cheddar:#dd8a2e;
+    --cheddar-dark:#a85f1c;
+    --gouda:#f0b940;
+    --vein:#7c9578;
+    --vein-dim:#5c7159;
+    --radius-wedge: 6px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+
+  body{
+    margin:0;
+    background:var(--rind);
+    color:var(--cream);
+    font-family:'Work Sans', sans-serif;
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  h1,h2,h3,.logo-word{
+    font-family:'Baloo 2', sans-serif;
+    margin:0;
+    font-weight:700;
+  }
+
+  a{color:inherit; text-decoration:none;}
+  :focus-visible{outline:2px solid var(--gouda); outline-offset:3px;}
+
+  .wrap{max-width:1120px; margin:0 auto; padding:0 32px;}
+  @media (max-width:640px){.wrap{padding:0 20px;}}
+
+  /* ---------- background texture: cheese holes ---------- */
+  .holes{position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:0;}
+  .holes span{
+    position:absolute; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, rgba(0,0,0,0.35), rgba(0,0,0,0.12) 60%, transparent 75%);
+  }
+
+  /* ---------- nav ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(32,22,14,0.86);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  nav.wrap{
+    display:flex; align-items:center; justify-content:space-between;
+    height:74px;
+  }
+  .brand{display:flex; align-items:center; gap:10px; font-size:1.15rem;}
+  .brand svg{width:26px; height:26px; flex-shrink:0;}
+  .navlinks{display:flex; gap:34px; font-size:0.98rem; color:var(--cream-dim);}
+  .navlinks a{position:relative; padding:4px 0;}
+  .navlinks a:hover{color:var(--cream);}
+  .navlinks a::after{
+    content:""; position:absolute; left:0; bottom:-2px; width:0; height:2px;
+    background:var(--cheddar); transition:width .25s ease;
+  }
+  .navlinks a:hover::after{width:100%;}
+  @media (max-width:640px){.navlinks{display:none;}}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative; overflow:hidden; padding:96px 0 110px;}
+  .hero-grid{
+    position:relative; z-index:1;
+    display:grid; grid-template-columns:1.15fr 0.85fr; gap:48px; align-items:center;
+  }
+  @media (max-width:880px){.hero-grid{grid-template-columns:1fr; text-align:left;}}
+
+  .tagline{
+    color:var(--gouda);
+    font-size:1.02rem;
+    font-weight:500;
+    margin-bottom:18px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .tagline .dash{width:22px; height:2px; background:var(--gouda); display:inline-block;}
+
+  .hero h1{
+    font-size:clamp(2.6rem, 6vw, 4.4rem);
+    line-height:1.04;
+    color:var(--cream);
+    letter-spacing:-0.01em;
+  }
+  .hero h1 .accent{
+    display:block;
+    color:var(--cheddar);
+    -webkit-text-stroke:0;
+  }
+
+  .hero p.lede{
+    margin-top:26px;
+    max-width:46ch;
+    color:var(--cream-dim);
+    font-size:1.08rem;
+  }
+
+  .cta-row{display:flex; gap:16px; margin-top:36px; flex-wrap:wrap;}
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    padding:14px 26px;
+    font-family:'Work Sans', sans-serif;
+    font-weight:600;
+    font-size:0.98rem;
+    border-radius:100px;
+    transition:transform .18s ease, background .18s ease, border-color .18s ease;
+    cursor:pointer;
+  }
+  .btn-solid{background:var(--cheddar); color:#241608; border:1px solid var(--cheddar);}
+  .btn-solid:hover{background:var(--gouda); transform:translateY(-2px);}
+  .btn-outline{border:1px solid var(--line); color:var(--cream);}
+  .btn-outline:hover{border-color:var(--cheddar); transform:translateY(-2px);}
+
+  /* hero cheese wheel illustration */
+  .wheel-wrap{position:relative; display:flex; justify-content:center;}
+  .wheel{width:min(340px, 80vw); height:auto; transform:rotate(-6deg);}
+
+  /* wedge divider between sections */
+  .wedge-divider{
+    height:64px;
+    background:var(--rind-2);
+    clip-path:polygon(0 100%, 0 40%, 100% 0, 100% 100%);
+  }
+
+  /* ---------- section shell ---------- */
+  section{position:relative;}
+  .section-pad{padding:96px 0;}
+  .section-head{margin-bottom:56px; max-width:640px;}
+  .section-head h2{font-size:clamp(1.9rem,3.4vw,2.5rem); color:var(--cream);}
+  .section-head p{margin-top:12px; color:var(--cream-dim); font-size:1.02rem;}
+
+  .band-roles{background:var(--rind-2);}
+  .band-projects{background:var(--rind);}
+  .band-contact{background:var(--rind-3);}
+
+  /* ---------- roles: editorial rows, not cards ---------- */
+  .role-row{
+    display:grid;
+    grid-template-columns:64px 1fr 1.4fr;
+    gap:28px;
+    align-items:start;
+    padding:32px 0;
+    border-top:1px solid var(--line);
+  }
+  .role-row:last-child{border-bottom:1px solid var(--line);}
+  @media (max-width:720px){
+    .role-row{grid-template-columns:52px 1fr; }
+    .role-row .role-desc{grid-column:1 / -1; margin-top:6px;}
+  }
+
+  .seal{
+    width:52px; height:52px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(circle at 32% 28%, var(--gouda), var(--cheddar-dark) 78%);
+    box-shadow:inset 0 -3px 6px rgba(0,0,0,0.35);
+  }
+  .seal svg{width:24px; height:24px; color:#241608;}
+
+  .role-title{font-size:1.28rem; color:var(--cream); margin-bottom:4px;}
+  .role-org{color:var(--cheddar); font-weight:600; font-size:0.95rem;}
+  .role-desc{color:var(--cream-dim); font-size:1rem; max-width:52ch;}
+
+  /* ---------- project: cheese-label ticket ---------- */
+  .project-card{
+    display:grid; grid-template-columns:180px 1fr; gap:40px;
+    align-items:center;
+    padding:8px 0;
+  }
+  @media (max-width:720px){.project-card{grid-template-columns:1fr; text-align:center;}}
+
+  .label-badge{
+    width:150px; height:150px; border-radius:50%;
+    margin:0 auto;
+    background:
+      repeating-conic-gradient(from 0deg, var(--cheddar-dark) 0deg 6deg, var(--cheddar) 6deg 12deg);
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+  }
+  .label-badge::before{
+    content:""; position:absolute; inset:14px; border-radius:50%;
+    background:var(--rind-3);
+  }
+  .label-badge span{
+    position:relative; z-index:1;
+    font-family:'Baloo 2', sans-serif; font-weight:700;
+    color:var(--gouda); font-size:0.85rem; text-align:center; line-height:1.2;
+    padding:0 12px;
+  }
+
+  .project-tag{
+    display:inline-flex; align-items:center; gap:8px;
+    color:var(--vein); font-weight:600; font-size:0.9rem;
+    margin-bottom:10px;
+  }
+  .project-tag::before{content:""; width:7px; height:7px; border-radius:50%; background:var(--vein);}
+
+  .project-title{font-size:1.7rem; color:var(--cream); margin-bottom:4px;}
+  .project-meta{color:var(--cream-dim); font-size:0.92rem; margin-bottom:14px;}
+  .project-desc{color:var(--cream-dim); max-width:64ch; margin-bottom:20px;}
+
+  .link-pill{
+    display:inline-flex; align-items:center; gap:8px;
+    border:1px solid var(--line); border-radius:100px;
+    padding:9px 18px; font-size:0.92rem; font-weight:500;
+    color:var(--cream);
+  }
+  .link-pill:hover{border-color:var(--cheddar); color:var(--cheddar);}
+
+  /* ---------- contact: shop-ticket layout ---------- */
+  .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:0;}
+  @media (max-width:780px){.contact-grid{grid-template-columns:1fr;}}
+  .ticket{
+    padding:40px;
+    position:relative;
+  }
+  .ticket + .ticket{border-left:1px dashed var(--line);}
+  @media (max-width:780px){
+    .ticket + .ticket{border-left:none; border-top:1px dashed var(--line);}
+  }
+  .ticket h3{font-size:1.3rem; color:var(--cream); margin-bottom:20px;}
+  .who-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:12px;}
+  .who-list li{color:var(--cream-dim); position:relative; padding-left:18px;}
+  .who-list li::before{content:"—"; position:absolute; left:0; color:var(--cheddar);}
+
+  .contact-line{display:flex; align-items:center; gap:12px; margin-bottom:14px; color:var(--cream-dim);}
+  .contact-line svg{width:19px; height:19px; color:var(--cheddar); flex-shrink:0;}
+  .contact-line a:hover{color:var(--cream);}
+
+  .socials{display:flex; align-items:center; gap:14px; margin-top:22px; color:var(--cream-dim); font-size:0.9rem;}
+  .socials .icons{display:flex; gap:10px;}
+  .socials svg{width:20px; height:20px; padding:8px; border-radius:50%; background:var(--rind-2); color:var(--cream);}
+
+  footer{
+    text-align:center; padding:32px 0; color:var(--cream-dim);
+    font-size:0.88rem; border-top:1px solid var(--line); background:var(--rind-3);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L21 20H3L12 2Z" fill="#dd8a2e"/><circle cx="14" cy="15" r="1.4" fill="#20160e"/><circle cx="10" cy="17" r="1" fill="#20160e"/></svg>
+      <span class="logo-word">CheeseMello</span>
+    </div>
+    <div class="navlinks">
+      <a href="#roles">Rôles</a>
+      <a href="#projets">Projets</a>
+      <a href="#infos">Infos</a>
+    </div>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="holes" id="heroHoles"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <p class="tagline"><span class="dash"></span>Modérateur, animateur et créateur de contenu</p>
+      <h1>Salut, je suis<span class="accent">CheeseMello</span></h1>
+      <p class="lede">Modérateur-animateur sur StelyCube, animateur sur BlockRadio, et je partage du contenu principalement sur Instagram, avec quelques incursions sur YouTube et TikTok.</p>
+      <div class="cta-row">
+        <a href="#roles" class="btn btn-solid">Voir mes rôles</a>
+        <a href="#infos" class="btn btn-outline">Me contacter</a>
+      </div>
+    </div>
+    <div class="wheel-wrap">
+      <svg class="wheel" viewBox="0 0 320 320">
+        <defs>
+          <radialGradient id="wheelGrad" cx="35%" cy="30%" r="75%">
+            <stop offset="0%" stop-color="#f0b940"/>
+            <stop offset="60%" stop-color="#dd8a2e"/>
+            <stop offset="100%" stop-color="#a85f1c"/>
+          </radialGradient>
+        </defs>
+        <path d="M160 160 L160 20 A140 140 0 1 1 41 231 Z" fill="url(#wheelGrad)"/>
+        <path d="M160 160 L160 20 A140 140 0 0 1 274 82 Z" fill="#20160e" opacity="0.9"/>
+        <circle cx="120" cy="90" r="8" fill="#a85f1c" opacity="0.5"/>
+        <circle cx="190" cy="140" r="5" fill="#a85f1c" opacity="0.5"/>
+        <circle cx="150" cy="200" r="10" fill="#a85f1c" opacity="0.5"/>
+        <circle cx="215" cy="220" r="6" fill="#a85f1c" opacity="0.5"/>
+        <circle cx="95" cy="180" r="4" fill="#a85f1c" opacity="0.5"/>
+        <circle cx="210" cy="170" r="3" fill="#a85f1c" opacity="0.4"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<div class="wedge-divider"></div>
+
+<section id="roles" class="band-roles section-pad">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Mes rôles</h2>
+      <p>Trois endroits où je passe le plus clair de mon temps.</p>
+    </div>
+
+    <div class="role-row">
+      <div class="seal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v6c0 5-3.5 7.5-7 9-3.5-1.5-7-4-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+      </div>
+      <div>
+        <div class="role-title">Modérateur & Animateur</div>
+        <div class="role-org">StelyCube</div>
+      </div>
+      <p class="role-desc">Je veille sur la communauté et j'anime les évènements du serveur : sanctions, médiation entre joueurs et mise en place d'animations.</p>
+    </div>
+
+    <div class="role-row">
+      <div class="seal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M7.5 7.5a7 7 0 0 0 0 9M16.5 7.5a7 7 0 0 1 0 9"/></svg>
+      </div>
+      <div>
+        <div class="role-title">Animateur</div>
+        <div class="role-org">BlockRadio</div>
+      </div>
+      <p class="role-desc">J'anime des émissions et je fais vivre l'antenne pour la communauté Minecraft de BlockRadio.</p>
+    </div>
+
+    <div class="role-row">
+      <div class="seal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4L12 3z"/><path d="M19 15l.7 1.8L21.5 17.5l-1.8.7L19 20l-.7-1.8-1.8-.7 1.8-.7L19 15z"/></svg>
+      </div>
+      <div>
+        <div class="role-title">Créateur de contenu</div>
+        <div class="role-org">Réseaux sociaux</div>
+      </div>
+      <p class="role-desc">Principalement sur Instagram, avec du contenu régulier aussi sur YouTube et TikTok.</p>
+    </div>
+  </div>
+</section>
+
+<section id="projets" class="band-projects section-pad">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Mes projets</h2>
+      <p>Ce qui me tient à cœur.</p>
+    </div>
+
+    <div class="project-card">
+      <div class="label-badge"><span>Stely<br>Cube</span></div>
+      <div>
+        <div class="project-tag">Coup de cœur</div>
+        <div class="project-title">StelyCube</div>
+        <div class="project-meta">26.1.2 &nbsp;·&nbsp; Java & Bedrock</div>
+        <p class="project-desc">Un serveur Minecraft que j'adore et sur lequel je suis modérateur-animateur. Ce n'est pas mon serveur, mais c'est là que je passe le plus de temps à faire vivre la communauté.</p>
+        <a href="https://play.stelycube.fr" target="_blank" rel="noopener" class="link-pill">play.stelycube.fr
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M9 7h8v8"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="infos" class="band-contact">
+  <div class="wrap">
+    <div class="section-head" style="padding-top:96px;">
+      <h2>Infos & contact</h2>
+      <p>Envie d'échanger ? Voici où me trouver.</p>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="contact-grid">
+      <div class="ticket">
+        <h3>Qui je suis</h3>
+        <ul class="who-list">
+          <li>CheeseMello, animateur-modérateur sur StelyCube.</li>
+          <li>CheeseMello, animateur sur BlockRadio.</li>
+          <li>Créateur de contenu, surtout sur Instagram, YouTube et TikTok.</li>
+        </ul>
+      </div>
+      <div class="ticket">
+        <h3>Contact</h3>
+        <div class="contact-line">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M8 10h.01M12 10h.01M16 10h.01"/></svg>
+          <span>cheesemello4628</span>
+        </div>
+        <div class="contact-line">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+          <a href="mailto:contactpro.cheesemello.fr@gmail.com">contactpro.cheesemello.fr@gmail.com</a>
+        </div>
+        <div class="socials">
+          <div class="icons">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10 9l5 3-5 3V9z"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4v9a4 4 0 1 1-3-3.87V4h3z"/></svg>
+          </div>
+          <span>Contenu régulier sur ces plateformes</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>CheeseMello — 2026. Fait avec un peu trop de fromage.</footer>
+
+<script>
+  // scatter a few subtle "holes" behind the hero, once, no continuous motion
+  const holeField = document.getElementById('heroHoles');
+  const sizes = [60,90,40,120,55,75,35];
+  sizes.forEach((s,i)=>{
+    const el = document.createElement('span');
+    el.style.width = s+'px';
+    el.style.height = s+'px';
+    el.style.left = (8 + i*14 + (i%2?4:0)) + '%';
+    el.style.top = (10 + (i%3)*28) + '%';
+    holeField.appendChild(el);
+  });
+</script>
+
+</body>
+</html>
